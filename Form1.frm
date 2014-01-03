@@ -165,31 +165,31 @@ Public Sub GetUser(strUsername As String)
     strSQL1 = "SELECT * FROM ticketdb.users where idUsers = '" & Trim$(strUsername) & "'  ORDER BY idFullName"
     Set rs = cn_global.Execute(strSQL1)
     With rs
-        txtUserName.Text = !idUsers
-        txtFullname.Text = !idFullname
+        txtUsername.Text = !idUsers
+        txtFullName.Text = !idFullname
         txtEmail.Text = !idEmail
         chkIsAdmin.Value = !idAdmins
         chkReport.Value = !idJPTReport
     End With
     Set rs = Nothing
     cmdUpdate.Enabled = True
-    txtUserName.Enabled = False
+    txtUsername.Enabled = False
 End Sub
 Private Sub ClearAll()
-    txtUserName.Text = ""
-    txtFullname.Text = ""
+    txtUsername.Text = ""
+    txtFullName.Text = ""
     txtEmail.Text = ""
     chkIsAdmin.Value = False
     chkReport.Value = False
     cmdUpdate.Enabled = False
-    txtUserName.Enabled = True
+    txtUsername.Enabled = True
 End Sub
 Private Sub cmdClear_Click()
     ClearAll
 End Sub
 
 Private Sub cmdCheck_Click()
-    If IsInAD(LCase$(txtUserName.Text)) Then
+    If IsInAD(LCase$(txtUsername.Text)) Then
         MsgBox "User is in directory!"
     Else
         MsgBox "User is NOT in directory!"
@@ -255,16 +255,16 @@ Private Sub cmdUpdate_Click()
     Dim strSQL1 As String
     Dim blah
     Dim Splitstr() As String
-    strSQL1 = "SELECT * From users Where idUsers = '" & txtUserName.Text & "'"
+    strSQL1 = "SELECT * From users Where idUsers = '" & txtUsername.Text & "'"
     cn_global.CursorLocation = adUseClient
-    If Trim$(txtUserName.Text) = "" Or Trim$(txtFullname.Text) = "" Or Trim$(txtEmail.Text) = "" Then
+    If Trim$(txtUsername.Text) = "" Or Trim$(txtFullName.Text) = "" Or Trim$(txtEmail.Text) = "" Then
         blah = MsgBox("One or more fields is blank. Please fill all fields.", vbOKOnly + vbInformation, "Something's missing...")
         Exit Sub
     End If
     Splitstr = Split(txtEmail.Text, "@")
     rs.Open strSQL1, cn_global, adOpenKeyset, adLockOptimistic
     With rs
-        !idFullname = Trim$(txtFullname.Text)
+        !idFullname = Trim$(txtFullName.Text)
         !idEmail = Trim$(Splitstr(0) & EmailDomain)
         !idAdmins = chkIsAdmin.Value
         !idJPTReport = chkReport.Value
@@ -278,17 +278,12 @@ Private Sub cmdUpdate_Click()
 errs:
     If Err.Number = -2147217864 Then
         blah = MsgBox("Nothing to update.", vbOKOnly + vbExclamation, "No Changes...")
-        GetUser txtUserName.Text
+        GetUser txtUsername.Text
     End If
-End Sub
-
-Private Sub Command1_Click()
-    GetUsersInfo
 End Sub
 
 Private Sub flexUserList_DblClick()
     GetUser flexUserList.TextMatrix(flexUserList.RowSel, 2)
-    
 End Sub
 
 Private Sub Form_Load()
@@ -313,17 +308,17 @@ Public Sub DeleteUser(strUsername As String)
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
-cn_global.Close
+    cn_global.Close
     Unload Me
     End
 End Sub
 
 Private Sub mnuDelete_Click()
     Dim blah
-    If txtUserName.Text <> "" Then
-        blah = MsgBox("Are you sure you want to delete user: " & UCase$(txtUserName.Text) & "?", vbOKCancel + vbCritical, "Delete User")
+    If txtUsername.Text <> "" Then
+        blah = MsgBox("Are you sure you want to delete user: " & UCase$(txtUsername.Text) & "?", vbOKCancel + vbCritical, "Delete User")
         If blah = vbOK Then
-            DeleteUser txtUserName.Text
+            DeleteUser txtUsername.Text
         Else
             ClearAll
             Exit Sub
@@ -336,7 +331,8 @@ End Sub
 Private Sub mnuNewUser_Click()
     frmWait.Show
     DoEvents
-    GetUsersInfo
+    'GetUsersInfo
+    GetUsersInfo2
     frmWait.Hide
     frmAddNew.Show
 End Sub

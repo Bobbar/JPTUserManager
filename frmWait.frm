@@ -26,6 +26,16 @@ Begin VB.Form frmWait
       TabIndex        =   0
       Top             =   0
       Width           =   5775
+      Begin VB.Label lblStatus 
+         Alignment       =   2  'Center
+         BackStyle       =   0  'Transparent
+         Caption         =   "%STATUS%"
+         Height          =   195
+         Left            =   60
+         TabIndex        =   3
+         Top             =   1860
+         Width           =   5640
+      End
       Begin VB.Label Label1 
          Alignment       =   2  'Center
          AutoSize        =   -1  'True

@@ -45,6 +45,7 @@ Public Type UserInfo
     Email As String
 End Type
 Public UserData() As UserInfo
+
 Public Function FindUserNameExact(strUsername As String) As UserInfo
     Dim i As Integer
     FindUserNameExact.Email = ""
@@ -247,7 +248,53 @@ Public Function GetUsersInfo()
 errs:
     If Err.Number = -2147463155 Then Resume Next
 End Function
-
+Public Function GetUsersInfo2()
+    On Error Resume Next
+    Dim intEntry        As Integer
+    Dim strSubGroupName As String
+    Dim CylGroup        As IADsContainer
+    Dim StlGroup        As IADsContainer
+    Dim SubGroup        As IADsContainer
+    Dim SubGroupName    As Object
+    Dim user            As IADsUser
+    Set CylGroup = GetObject("LDAP://corp.worthingtonindustries.local:389/OU=Cylinders,DC=corp,DC=worthingtonindustries,DC=local")
+    Set StlGroup = GetObject("LDAP://corp.worthingtonindustries.local:389/OU=Steel,DC=corp,DC=worthingtonindustries,DC=local")
+    intEntry = 0
+    ReDim UserData(0)
+    For Each SubGroupName In CylGroup
+        strSubGroupName = SubGroupName.Name
+        frmWait.lblStatus.Caption = strSubGroupName
+        DoEvents
+        Set SubGroup = GetObject("LDAP://corp.worthingtonindustries.local:389/" & strSubGroupName & "-Users," & strSubGroupName & ",OU=Cylinders,DC=corp,DC=worthingtonindustries,DC=local")
+        SubGroup.Filter = Array("user")
+        For Each user In SubGroup
+            '  Debug.Print user.Fullname & " - " & user.Get("mail")
+            UserData(intEntry).Fullname = user.Fullname
+            UserData(intEntry).Username = user.Get("sAMAccountName")
+            UserData(intEntry).Email = user.Get("mail")
+            intEntry = intEntry + 1
+            ReDim Preserve UserData(intEntry)
+        Next user
+        Set SubGroup = Nothing
+    Next SubGroupName
+    For Each SubGroupName In StlGroup
+        strSubGroupName = SubGroupName.Name
+        frmWait.lblStatus.Caption = strSubGroupName
+        DoEvents
+        Set SubGroup = GetObject("LDAP://corp.worthingtonindustries.local:389/" & strSubGroupName & "-Users," & strSubGroupName & ",OU=Steel,DC=corp,DC=worthingtonindustries,DC=local")
+        SubGroup.Filter = Array("user")
+        For Each user In SubGroup
+            ' Debug.Print user.Fullname & " - " & user.Get("mail")
+            UserData(intEntry).Fullname = user.Fullname
+            UserData(intEntry).Username = user.Get("sAMAccountName")
+            UserData(intEntry).Email = user.Get("mail")
+            intEntry = intEntry + 1
+            ReDim Preserve UserData(intEntry)
+        Next user
+        Set SubGroup = Nothing
+    Next SubGroupName
+End Function
+    
 Public Function IsInDB(Username As String) As Boolean
     Dim rs      As New ADODB.Recordset
     Dim strSQL1 As String
