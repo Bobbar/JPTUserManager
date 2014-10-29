@@ -23,6 +23,14 @@ Begin VB.Form Form1
    ScaleHeight     =   5895
    ScaleWidth      =   11205
    StartUpPosition =   2  'CenterScreen
+   Begin VB.CommandButton cmdRefresh 
+      Caption         =   "Refresh"
+      Height          =   360
+      Left            =   60
+      TabIndex        =   12
+      Top             =   840
+      Width           =   990
+   End
    Begin VB.CommandButton cmdClear 
       Caption         =   "Clear"
       Height          =   360
@@ -165,31 +173,31 @@ Public Sub GetUser(strUsername As String)
     strSQL1 = "SELECT * FROM ticketdb.users where idUsers = '" & Trim$(strUsername) & "'  ORDER BY idFullName"
     Set rs = cn_global.Execute(strSQL1)
     With rs
-        txtUsername.Text = !idUsers
-        txtFullName.Text = !idFullname
+        txtUserName.Text = !idUsers
+        txtFullname.Text = !idFullname
         txtEmail.Text = !idEmail
         chkIsAdmin.Value = !idAdmins
         chkReport.Value = !idJPTReport
     End With
     Set rs = Nothing
     cmdUpdate.Enabled = True
-    txtUsername.Enabled = False
+    txtUserName.Enabled = False
 End Sub
 Private Sub ClearAll()
-    txtUsername.Text = ""
-    txtFullName.Text = ""
+    txtUserName.Text = ""
+    txtFullname.Text = ""
     txtEmail.Text = ""
     chkIsAdmin.Value = False
     chkReport.Value = False
     cmdUpdate.Enabled = False
-    txtUsername.Enabled = True
+    txtUserName.Enabled = True
 End Sub
 Private Sub cmdClear_Click()
     ClearAll
 End Sub
 
 Private Sub cmdCheck_Click()
-    If IsInAD(LCase$(txtUsername.Text)) Then
+    If IsInAD(LCase$(txtUserName.Text)) Then
         MsgBox "User is in directory!"
     Else
         MsgBox "User is NOT in directory!"
@@ -206,12 +214,14 @@ Public Sub GetUsers()
     flexUserList.FixedCols = 1
     flexUserList.FixedRows = 1
     flexUserList.Rows = rs.RecordCount + 1
-    flexUserList.Cols = 6
+    flexUserList.Cols = 8
     flexUserList.TextMatrix(0, 1) = "Full Name"
     flexUserList.TextMatrix(0, 2) = "Username"
     flexUserList.TextMatrix(0, 3) = "Email"
     flexUserList.TextMatrix(0, 4) = "Is Admin"
     flexUserList.TextMatrix(0, 5) = "Gets Report"
+    flexUserList.TextMatrix(0, 6) = "Last Log-In"
+    flexUserList.TextMatrix(0, 7) = "Log-Ins"
     Do Until rs.EOF
         With rs
             flexUserList.TextMatrix(.AbsolutePosition, 1) = !idFullname
@@ -219,6 +229,8 @@ Public Sub GetUsers()
             flexUserList.TextMatrix(.AbsolutePosition, 3) = !idEmail
             flexUserList.TextMatrix(.AbsolutePosition, 4) = CBool(!idAdmins)
             flexUserList.TextMatrix(.AbsolutePosition, 5) = CBool(!idJPTReport)
+            flexUserList.TextMatrix(.AbsolutePosition, 6) = IIf(IsNull(!idLastLogIn), "Never", !idLastLogIn)
+            flexUserList.TextMatrix(.AbsolutePosition, 7) = !idLogIns
             .MoveNext
         End With
     Loop
@@ -249,22 +261,26 @@ Public Sub SizeTheSheet(TargetGrid As MSHFlexGrid)
     TargetGrid.ColWidth(0) = 0
 End Sub
 
+Private Sub cmdRefresh_Click()
+GetUsers
+End Sub
+
 Private Sub cmdUpdate_Click()
     On Error GoTo errs
     Dim rs      As New ADODB.Recordset
     Dim strSQL1 As String
     Dim blah
     Dim Splitstr() As String
-    strSQL1 = "SELECT * From users Where idUsers = '" & txtUsername.Text & "'"
+    strSQL1 = "SELECT * From users Where idUsers = '" & txtUserName.Text & "'"
     cn_global.CursorLocation = adUseClient
-    If Trim$(txtUsername.Text) = "" Or Trim$(txtFullName.Text) = "" Or Trim$(txtEmail.Text) = "" Then
+    If Trim$(txtUserName.Text) = "" Or Trim$(txtFullname.Text) = "" Or Trim$(txtEmail.Text) = "" Then
         blah = MsgBox("One or more fields is blank. Please fill all fields.", vbOKOnly + vbInformation, "Something's missing...")
         Exit Sub
     End If
     Splitstr = Split(txtEmail.Text, "@")
     rs.Open strSQL1, cn_global, adOpenKeyset, adLockOptimistic
     With rs
-        !idFullname = Trim$(txtFullName.Text)
+        !idFullname = Trim$(txtFullname.Text)
         !idEmail = Trim$(Splitstr(0) & EmailDomain)
         !idAdmins = chkIsAdmin.Value
         !idJPTReport = chkReport.Value
@@ -278,7 +294,7 @@ Private Sub cmdUpdate_Click()
 errs:
     If Err.Number = -2147217864 Then
         blah = MsgBox("Nothing to update.", vbOKOnly + vbExclamation, "No Changes...")
-        GetUser txtUsername.Text
+        GetUser txtUserName.Text
     End If
 End Sub
 
@@ -315,10 +331,10 @@ End Sub
 
 Private Sub mnuDelete_Click()
     Dim blah
-    If txtUsername.Text <> "" Then
-        blah = MsgBox("Are you sure you want to delete user: " & UCase$(txtUsername.Text) & "?", vbOKCancel + vbCritical, "Delete User")
+    If txtUserName.Text <> "" Then
+        blah = MsgBox("Are you sure you want to delete user: " & UCase$(txtUserName.Text) & "?", vbOKCancel + vbCritical, "Delete User")
         If blah = vbOK Then
-            DeleteUser txtUsername.Text
+            DeleteUser txtUserName.Text
         Else
             ClearAll
             Exit Sub
