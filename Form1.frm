@@ -3,10 +3,10 @@ Object = "{0ECD9B60-23AA-11D0-B351-00A0C9055D8E}#6.0#0"; "MSHFLXGD.OCX"
 Begin VB.Form Form1 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "JPT User Manager"
-   ClientHeight    =   5895
+   ClientHeight    =   6465
    ClientLeft      =   45
    ClientTop       =   675
-   ClientWidth     =   11205
+   ClientWidth     =   13125
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,11 +18,68 @@ Begin VB.Form Form1
    EndProperty
    Icon            =   "Form1.frx":0000
    LinkTopic       =   "Form1"
+   LockControls    =   -1  'True
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   5895
-   ScaleWidth      =   11205
+   ScaleHeight     =   6465
+   ScaleWidth      =   13125
    StartUpPosition =   2  'CenterScreen
+   Begin VB.CheckBox chkSteelFab 
+      Caption         =   "SteelFab"
+      Height          =   255
+      Left            =   10080
+      TabIndex        =   17
+      Top             =   1140
+      Width           =   1035
+   End
+   Begin VB.CheckBox chkRockyMtn 
+      Caption         =   "RockyMtn"
+      Height          =   255
+      Left            =   9060
+      TabIndex        =   19
+      Top             =   1140
+      Width           =   1095
+   End
+   Begin VB.CheckBox chkWooster 
+      Caption         =   "Wooster"
+      Height          =   255
+      Left            =   9900
+      TabIndex        =   18
+      Top             =   900
+      Width           =   915
+   End
+   Begin VB.CheckBox chkNuclear 
+      Caption         =   "Nuclear"
+      Height          =   255
+      Left            =   9000
+      TabIndex        =   16
+      Top             =   900
+      Width           =   855
+   End
+   Begin VB.CheckBox chkIM 
+      Caption         =   "IM"
+      Height          =   255
+      Left            =   8400
+      TabIndex        =   15
+      Top             =   900
+      Width           =   555
+   End
+   Begin VB.CheckBox chkControls 
+      Caption         =   "Controls"
+      Height          =   255
+      Left            =   8160
+      TabIndex        =   14
+      Top             =   1140
+      Width           =   915
+   End
+   Begin VB.CheckBox chkDailyReport 
+      Caption         =   "Gets Daily?"
+      Height          =   255
+      Left            =   9300
+      TabIndex        =   13
+      Top             =   660
+      Width           =   1335
+   End
    Begin VB.CommandButton cmdRefresh 
       Caption         =   "Refresh"
       Height          =   360
@@ -34,14 +91,14 @@ Begin VB.Form Form1
    Begin VB.CommandButton cmdClear 
       Caption         =   "Clear"
       Height          =   360
-      Left            =   10140
+      Left            =   11940
       TabIndex        =   10
-      Top             =   900
+      Top             =   1140
       Width           =   990
    End
    Begin VB.TextBox txtEmail 
       Height          =   315
-      Left            =   5280
+      Left            =   6420
       TabIndex        =   3
       Top             =   360
       Width           =   2595
@@ -50,7 +107,7 @@ Begin VB.Form Form1
       Caption         =   "Update"
       Enabled         =   0   'False
       Height          =   480
-      Left            =   4380
+      Left            =   5520
       TabIndex        =   6
       Top             =   900
       Width           =   1530
@@ -58,7 +115,7 @@ Begin VB.Form Form1
    Begin VB.CheckBox chkReport 
       Caption         =   "Gets Report?"
       Height          =   255
-      Left            =   8160
+      Left            =   9300
       TabIndex        =   5
       Top             =   420
       Width           =   1515
@@ -66,33 +123,33 @@ Begin VB.Form Form1
    Begin VB.CheckBox chkIsAdmin 
       Caption         =   "Admin?"
       Height          =   255
-      Left            =   8160
+      Left            =   9300
       TabIndex        =   4
       Top             =   180
       Width           =   915
    End
    Begin VB.TextBox txtFullname 
       Height          =   315
-      Left            =   3180
+      Left            =   4320
       TabIndex        =   2
       Top             =   360
       Width           =   1875
    End
    Begin VB.TextBox txtUserName 
       Height          =   315
-      Left            =   1800
+      Left            =   2940
       TabIndex        =   0
       Top             =   360
       Width           =   1215
    End
    Begin MSHierarchicalFlexGridLib.MSHFlexGrid flexUserList 
-      Height          =   4215
+      Height          =   4815
       Left            =   120
       TabIndex        =   1
       Top             =   1560
-      Width           =   10935
-      _ExtentX        =   19288
-      _ExtentY        =   7435
+      Width           =   12855
+      _ExtentX        =   22675
+      _ExtentY        =   8493
       _Version        =   393216
       ScrollTrack     =   -1  'True
       FocusRect       =   0
@@ -125,7 +182,7 @@ Begin VB.Form Form1
       BackStyle       =   0  'Transparent
       Caption         =   "Email (@Worthingtonindustries.com):"
       Height          =   195
-      Left            =   5280
+      Left            =   6420
       TabIndex        =   9
       Top             =   120
       Width           =   2670
@@ -135,7 +192,7 @@ Begin VB.Form Form1
       BackStyle       =   0  'Transparent
       Caption         =   "Full Name:"
       Height          =   195
-      Left            =   3180
+      Left            =   4320
       TabIndex        =   8
       Top             =   120
       Width           =   750
@@ -145,7 +202,7 @@ Begin VB.Form Form1
       BackStyle       =   0  'Transparent
       Caption         =   "Username:"
       Height          =   195
-      Left            =   1800
+      Left            =   2940
       TabIndex        =   7
       Top             =   120
       Width           =   780
@@ -178,10 +235,52 @@ Public Sub GetUser(strUsername As String)
         txtEmail.Text = !idEmail
         chkIsAdmin.Value = !idAdmins
         chkReport.Value = !idJPTReport
+        chkDailyReport.Value = !idJPTDailyReport
+        If CInt(!idJPTDailyReport) = 1 Then
+            EnableFilters
+            SetFilters !idCompanyFilters
+        Else
+            DisableFilters
+        End If
     End With
     Set rs = Nothing
     cmdUpdate.Enabled = True
     txtUserName.Enabled = False
+End Sub
+Public Sub SetFilters(Filters As String)
+    Dim FilterArray() As String
+    FilterArray = Split(Filters, ",")
+    If FilterArray(0) = 1 Then chkControls.Value = 1
+    If FilterArray(1) = 1 Then chkIM.Value = 1
+    If FilterArray(2) = 1 Then chkNuclear.Value = 1
+    If FilterArray(3) = 1 Then chkRockyMtn.Value = 1
+    If FilterArray(4) = 1 Then chkSteelFab.Value = 1
+    If FilterArray(5) = 1 Then chkWooster.Value = 1
+End Sub
+Public Sub DisableFilters()
+    ClearFilters
+    chkControls.Enabled = False
+    chkIM.Enabled = False
+    chkNuclear.Enabled = False
+    chkRockyMtn.Enabled = False
+    chkSteelFab.Enabled = False
+    chkWooster.Enabled = False
+End Sub
+Public Sub EnableFilters()
+    chkControls.Enabled = True
+    chkIM.Enabled = True
+    chkNuclear.Enabled = True
+    chkRockyMtn.Enabled = True
+    chkSteelFab.Enabled = True
+    chkWooster.Enabled = True
+End Sub
+Public Sub ClearFilters()
+    chkControls.Value = 0
+    chkIM.Value = 0
+    chkNuclear.Value = 0
+    chkRockyMtn.Value = 0
+    chkSteelFab.Value = 0
+    chkWooster.Value = 0
 End Sub
 Private Sub ClearAll()
     txtUserName.Text = ""
@@ -191,11 +290,22 @@ Private Sub ClearAll()
     chkReport.Value = False
     cmdUpdate.Enabled = False
     txtUserName.Enabled = True
+    chkDailyReport.Value = False
+    DisableFilters
+End Sub
+Private Sub chkDailyReport_MouseUp(Button As Integer, _
+                                   Shift As Integer, _
+                                   X As Single, _
+                                   Y As Single)
+    If chkDailyReport.Value = 1 Then
+        EnableFilters
+    Else
+        DisableFilters
+    End If
 End Sub
 Private Sub cmdClear_Click()
     ClearAll
 End Sub
-
 Private Sub cmdCheck_Click()
     If IsInAD(LCase$(txtUserName.Text)) Then
         MsgBox "User is in directory!"
@@ -214,14 +324,15 @@ Public Sub GetUsers()
     flexUserList.FixedCols = 1
     flexUserList.FixedRows = 1
     flexUserList.Rows = rs.RecordCount + 1
-    flexUserList.Cols = 8
+    flexUserList.Cols = 9
     flexUserList.TextMatrix(0, 1) = "Full Name"
     flexUserList.TextMatrix(0, 2) = "Username"
     flexUserList.TextMatrix(0, 3) = "Email"
     flexUserList.TextMatrix(0, 4) = "Is Admin"
     flexUserList.TextMatrix(0, 5) = "Gets Report"
-    flexUserList.TextMatrix(0, 6) = "Last Log-In"
-    flexUserList.TextMatrix(0, 7) = "Log-Ins"
+    flexUserList.TextMatrix(0, 6) = "Gets Daily Report"
+    flexUserList.TextMatrix(0, 7) = "Last Log-In"
+    flexUserList.TextMatrix(0, 8) = "Log-Ins"
     Do Until rs.EOF
         With rs
             flexUserList.TextMatrix(.AbsolutePosition, 1) = !idFullname
@@ -229,8 +340,9 @@ Public Sub GetUsers()
             flexUserList.TextMatrix(.AbsolutePosition, 3) = !idEmail
             flexUserList.TextMatrix(.AbsolutePosition, 4) = CBool(!idAdmins)
             flexUserList.TextMatrix(.AbsolutePosition, 5) = CBool(!idJPTReport)
-            flexUserList.TextMatrix(.AbsolutePosition, 6) = IIf(IsNull(!idLastLogIn), "Never", !idLastLogIn)
-            flexUserList.TextMatrix(.AbsolutePosition, 7) = !idLogIns
+            flexUserList.TextMatrix(.AbsolutePosition, 6) = CBool(!idJPTDailyReport)
+            flexUserList.TextMatrix(.AbsolutePosition, 7) = IIf(IsNull(!idLastLogIn), "Never", !idLastLogIn)
+            flexUserList.TextMatrix(.AbsolutePosition, 8) = !idLogIns
             .MoveNext
         End With
     Loop
@@ -260,11 +372,9 @@ Public Sub SizeTheSheet(TargetGrid As MSHFlexGrid)
     TargetGrid.ScrollBars = flexScrollBarBoth
     TargetGrid.ColWidth(0) = 0
 End Sub
-
 Private Sub cmdRefresh_Click()
-GetUsers
+    GetUsers
 End Sub
-
 Private Sub cmdUpdate_Click()
     On Error GoTo errs
     Dim rs      As New ADODB.Recordset
@@ -284,6 +394,8 @@ Private Sub cmdUpdate_Click()
         !idEmail = Trim$(Splitstr(0) & EmailDomain)
         !idAdmins = chkIsAdmin.Value
         !idJPTReport = chkReport.Value
+        !idJPTDailyReport = chkDailyReport.Value
+        !idCompanyFilters = FilterString
         .Update
     End With
     Set rs = Nothing
@@ -297,15 +409,14 @@ errs:
         GetUser txtUserName.Text
     End If
 End Sub
-
 Private Sub flexUserList_DblClick()
     GetUser flexUserList.TextMatrix(flexUserList.RowSel, 2)
 End Sub
-
 Private Sub Form_Load()
     FindMySQLDriver
     cn_global.Open "uid=" & strUsername & ";pwd=" & strPassword & ";server=" & strServerAddress & ";" & "driver={" & strSQLDriver & "};database=TicketDB;dsn=;"
     GetUsers
+    DisableFilters
 End Sub
 Public Sub DeleteUser(strUsername As String)
     Dim blah
@@ -322,13 +433,11 @@ Public Sub DeleteUser(strUsername As String)
     GetUsers
     blah = MsgBox(UCase$(strUsername) & " has been deleted.", vbOKOnly + vbInformation, "Success")
 End Sub
-
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     cn_global.Close
     Unload Me
     End
 End Sub
-
 Private Sub mnuDelete_Click()
     Dim blah
     If txtUserName.Text <> "" Then
@@ -343,7 +452,6 @@ Private Sub mnuDelete_Click()
         blah = MsgBox("Please select a user first.", vbOKOnly + vbExclamation, "Nothing Selected")
     End If
 End Sub
-
 Private Sub mnuNewUser_Click()
     frmWait.Show
     DoEvents

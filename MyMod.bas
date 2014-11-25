@@ -1,6 +1,6 @@
 Attribute VB_Name = "MyMod"
 Option Explicit
-Public Const strServerAddress As String = "10.35.1.40"
+Public Const strServerAddress As String = "ohbre-pwadmin01"
 Public Const strUsername      As String = "TicketApp"
 Public Const strPassword      As String = "yb4w4"
 Public strSQLDriver           As String
@@ -45,7 +45,42 @@ Public Type UserInfo
     Email As String
 End Type
 Public UserData() As UserInfo
-
+Public Function FilterString() As String
+    Dim tmpString As String
+    With Form1
+        If .chkControls.Value = 1 Then
+            tmpString = tmpString + "1,"
+        Else
+            tmpString = tmpString + "0,"
+        End If
+        If .chkIM.Value = 1 Then
+            tmpString = tmpString + "1,"
+        Else
+            tmpString = tmpString + "0,"
+        End If
+        If .chkNuclear.Value = 1 Then
+            tmpString = tmpString + "1,"
+        Else
+            tmpString = tmpString + "0,"
+        End If
+        If .chkRockyMtn.Value = 1 Then
+            tmpString = tmpString + "1,"
+        Else
+            tmpString = tmpString + "0,"
+        End If
+        If .chkSteelFab.Value = 1 Then
+            tmpString = tmpString + "1,"
+        Else
+            tmpString = tmpString + "0,"
+        End If
+        If .chkWooster.Value = 1 Then
+            tmpString = tmpString + "1"
+        Else
+            tmpString = tmpString + "0"
+        End If
+    End With
+    FilterString = tmpString
+End Function
 Public Function FindUserNameExact(strUsername As String) As UserInfo
     Dim i As Integer
     FindUserNameExact.Email = ""
@@ -294,7 +329,6 @@ Public Function GetUsersInfo2()
         Set SubGroup = Nothing
     Next SubGroupName
 End Function
-    
 Public Function IsInDB(Username As String) As Boolean
     Dim rs      As New ADODB.Recordset
     Dim strSQL1 As String
