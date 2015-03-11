@@ -44,7 +44,30 @@ Public Type UserInfo
     Username As String
     Email As String
 End Type
-Public UserData() As UserInfo
+Public UserData()     As UserInfo
+Public intSelReportID As Integer
+Public Function NextGroup() As Integer
+    GetReportGroups
+    NextGroup = Form1.cmbReportGroup.ListCount
+End Function
+Public Sub GetReportGroups()
+    Dim rs      As New ADODB.Recordset
+    Dim strSQL1 As String
+    cn_global.CursorLocation = adUseClient
+    strSQL1 = "SELECT DISTINCT (reportsgroups_0.idGroupID) AS 'idGroupID' FROM ticketdb.reportsgroups reportsgroups_0 ORDER BY reportsgroups_0.idGroupID"
+    Set rs = cn_global.Execute(strSQL1)
+    Form1.cmbReportGroup.Clear
+    Form1.cmbReportGroups.Clear
+    Form1.cmbReportGroup.AddItem "0"
+    Form1.cmbReportGroups.AddItem "0"
+    Do Until rs.EOF
+        With rs
+            Form1.cmbReportGroup.AddItem !idGroupID '.Fields(.AbsolutePosition)
+            Form1.cmbReportGroups.AddItem !idGroupID
+            .MoveNext
+        End With
+    Loop
+End Sub
 Public Function FilterString() As String
     Dim tmpString As String
     With Form1
