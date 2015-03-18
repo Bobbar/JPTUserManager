@@ -96,21 +96,13 @@ Begin VB.Form Form1
       TabPicture(2)   =   "Form1.frx":0902
       Tab(2).ControlEnabled=   0   'False
       Tab(2).Control(0)=   "Label11"
-      Tab(2).Control(0).Enabled=   0   'False
       Tab(2).Control(1)=   "Label12"
-      Tab(2).Control(1).Enabled=   0   'False
       Tab(2).Control(2)=   "flexGroups"
-      Tab(2).Control(2).Enabled=   0   'False
       Tab(2).Control(3)=   "cmbReportGroups"
-      Tab(2).Control(3).Enabled=   0   'False
       Tab(2).Control(4)=   "cmbReports"
-      Tab(2).Control(4).Enabled=   0   'False
       Tab(2).Control(5)=   "cmdNewGroup"
-      Tab(2).Control(5).Enabled=   0   'False
       Tab(2).Control(6)=   "cmdDeleteGroup"
-      Tab(2).Control(6).Enabled=   0   'False
       Tab(2).Control(7)=   "cmdRemoveReport"
-      Tab(2).Control(7).Enabled=   0   'False
       Tab(2).ControlCount=   8
       Begin VB.CommandButton cmdRemoveReport 
          Caption         =   "Remove"
@@ -523,9 +515,6 @@ Begin VB.Form Form1
          Begin VB.Menu mnuDeleteReport 
             Caption         =   "Delete Report"
          End
-         Begin VB.Menu mnuDeleteGroup 
-            Caption         =   "Delete Group"
-         End
       End
    End
 End
@@ -584,8 +573,6 @@ Public Sub GetGroups(GroupID As Integer)
     flexGroups.TextMatrix(0, 7) = "Company Filter"
     flexGroups.TextMatrix(0, 8) = "Entry ID"
     flexGroups.ColWidth(8) = 0
-    
-    
     Do Until rs.EOF
         With rs
             flexGroups.TextMatrix(.AbsolutePosition, 1) = !idReportName
